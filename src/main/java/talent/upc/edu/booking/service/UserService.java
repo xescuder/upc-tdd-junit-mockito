@@ -42,6 +42,8 @@ public class UserService {
     logger.debug("User update action called");
     User foundUser = findOne(userId);
 
+
+
     logger.debug("User found");
 
     foundUser.setFirstName(user.getFirstName());
