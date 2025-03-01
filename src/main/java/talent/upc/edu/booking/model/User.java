@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "users")
 @Data
@@ -31,6 +33,6 @@ public class User {
   private String email;
 
   @Column(name = "registration_date")
-  private String registrationDate;
+  private LocalDate registrationDate;
 
 }
