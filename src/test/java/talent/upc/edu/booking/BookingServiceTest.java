@@ -2,6 +2,7 @@ package talent.upc.edu.booking;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import talent.upc.edu.booking.model.BookingRequest;
 import talent.upc.edu.booking.model.User;
 import talent.upc.edu.booking.service.BookingService;
 
