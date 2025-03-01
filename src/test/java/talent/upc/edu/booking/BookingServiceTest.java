@@ -3,6 +3,7 @@ package talent.upc.edu.booking;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import talent.upc.edu.booking.model.User;
+import talent.upc.edu.booking.service.BookingService;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -27,7 +28,7 @@ public class BookingServiceTest {
         int expected = Period.between(dateFrom, dateTo).getDays() * bookingRequest.getPricePerNight();
 
         // When
-        int actual = bookingService.calculateTotalPrice(pricePerNight, numberOfNights);
+        int actual = bookingService.calculateTotalPrice(bookingRequest);
 
         // Then
         assertThat(actual).isEqualTo(expected);
