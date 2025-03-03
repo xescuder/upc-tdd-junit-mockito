@@ -1,93 +1,76 @@
 package talent.upc.edu.booking;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import talent.upc.edu.booking.model.BookingRequest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import talent.upc.edu.booking.model.Booking;
 import talent.upc.edu.booking.model.User;
-import talent.upc.edu.booking.service.BookingService;
-import talent.upc.edu.booking.service.TimeProvider;
+import talent.upc.edu.booking.repository.BookingRepository;
+import talent.upc.edu.booking.service.*;
 
 import java.time.LocalDate;
-import java.time.Month;
-import java.time.Period;
-import java.util.Arrays;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static talent.upc.edu.booking.service.BookingService.BLACK_FRIDAY_DATES;
-
-/**
- * Unit tests for the BookingService class.
- * User Story: Booking Price Calculation
- * As a Customer looking to book a stay
- * I want to Receive an accurate price calculation for my booking
- * So that I can know the total cost before confirming my reservation
- * Acceptance Criteria:
- * The total price is calculated by multiplying the number of nights by the price per night.
- * If the user has been registered for more than 1 year, they receive a 5% discount on the total booking price.
- * If the booking is made during Black Friday (between November 28 and December 3), a 15% discount will be applied to the total booking price.
- * If the user qualifies for both the Christmas discount and a new user or loyalty discount, only the highest discount is applied (not cumulative)
- */
+@ExtendWith(MockitoExtension.class)
 public class BookingServiceTest {
-    private TimeProvider timeProvider;
+    @Mock
+    private RoomService roomService;
+
+    @Mock
+    private PaymentService paymentService;
+
+    @Mock
+    private BookingRepository bookingRepository;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private MailSender mailSender;
+
+    @InjectMocks
     private BookingService bookingService;
 
-    @BeforeEach
-    void setup() {
-        this.timeProvider = mock(TimeProvider.class);
-        this.bookingService = new BookingService(timeProvider);
-    }
+
+    @Captor
+    private ArgumentCaptor<Booking> bookingArgumentCaptor;
+
 
     @Test
-    void should_ReturnCorrectTotalPrice_When_MultipleNightsAreBooked() {
+    void should_MakeBooking_When_AllInputIsCorrect() {
         // Given
-        User user = new User(1L, "Xavier", "Escudero", "xescuder@gmail.com", null);
-        LocalDate dateFrom = LocalDate.of(2025, 4, 21);
-        LocalDate dateTo = LocalDate.of(2025, 4, 25);
-        BookingRequest bookingRequest = new BookingRequest(user, dateFrom, dateTo, 100);
-        int expected = Period.between(dateFrom, dateTo).getDays() * bookingRequest.getPricePerNight();
+        Booking booking = Booking.builder().guestFullName("Xavier Escudero Sabadell").build();
+        User user = User.builder().build();
+        LocalDate checkInDate = LocalDate.of(2025, 3, 21);
+        LocalDate checkOutDate = LocalDate.of(2025, 3, 25);
+        int totalGuests = 3;
 
-        // When
-        int actual = bookingService.calculateTotalPrice(bookingRequest);
+        when(roomService.findAvailableRoomId(checkInDate, checkOutDate, totalGuests)).thenReturn(1L);
+        when(userService.getUser(any(Long.class))).thenReturn(Optional.of(user));
+        when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> {
+            Booking bookingToSave = invocation.getArgument(0);
+            long bookingId = 1L + (long) (Math.random() * (10L - 1L));
+            bookingToSave.setId(bookingId);
+            return bookingToSave;
+        });
 
-        // Then
-        assertThat(actual).isEqualTo(expected);
-    }
+        // when
+        String bookingId = bookingService.makeBooking(booking);
 
-    @Test
-    void should_ReturnDiscountedTotalPrice_When_UserRegisteredMoreThanOneYear() {
-        // Given
-        LocalDate registrationDate = LocalDate.now().minusYears(1).minusDays(1);
-        User user = new User(1L, "Xavier", "Escudero", "", registrationDate);
-        LocalDate dateFrom = LocalDate.of(2025, 4, 21);
-        LocalDate dateTo = LocalDate.of(2025, 4, 25);
-        BookingRequest bookingRequest = new BookingRequest(user, dateFrom, dateTo, 100);
-
-        int expected = Period.between(dateFrom, dateTo).getDays() * bookingRequest.getPricePerNight() * 95 / 100;
-
-        // When
-        int actual = bookingService.calculateTotalPrice(bookingRequest);
-
-        // Then
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    void should_ReturnDiscountedTotalPrice_When_BookingIsDuringBlackFriday() {
-        // Given
-        User user = new User(1L, "Xavier", "Escudero", "", null);
-        LocalDate dateFrom = LocalDate.of(2026, Month.FEBRUARY, 5);
-        LocalDate dateTo = LocalDate.of(2026, Month.FEBRUARY, 9);
-        BookingRequest bookingRequest = new BookingRequest(user, dateFrom, dateTo, 100);
-
-        when(this.timeProvider.getCurrentDate()).thenReturn(Arrays.asList(BLACK_FRIDAY_DATES).get(1));
-        int expected = Period.between(dateFrom, dateTo).getDays() * bookingRequest.getPricePerNight() * 85 / 100;
-
-        // When
-        int actual = bookingService.calculateTotalPrice(bookingRequest);
-
-        // Then
-        assertThat(actual).isEqualTo(expected);
+        // then
+        verify(bookingRepository).save(bookingArgumentCaptor.capture());
+        Booking savedBooking = bookingArgumentCaptor.getValue();
+        assertThat(booking.getGuestFullName()).equals(savedBooking.getGuestFullName());
+        verify(mailSender).sendMail(user.getEmail(), "Booking Confirmation", "Your booking has been confirmed with id: " + bookingId);
     }
 }

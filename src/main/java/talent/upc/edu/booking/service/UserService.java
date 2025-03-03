@@ -1,6 +1,7 @@
 package talent.upc.edu.booking.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,5 +59,9 @@ public class UserService {
   public void delete(Long userId) {
     logger.debug("User delete action called");
     userRepository.deleteById(userId);
+  }
+
+  public Optional<User> getUser(Long any) {
+    return userRepository.findById(any);
   }
 }
