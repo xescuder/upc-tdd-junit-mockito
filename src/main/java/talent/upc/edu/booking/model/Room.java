@@ -2,8 +2,6 @@ package talent.upc.edu.booking.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.cglib.core.Local;
 
 import java.sql.Blob;
 import java.time.LocalDate;

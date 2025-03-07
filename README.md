@@ -1,4 +1,4 @@
-
+## TDD with Spring Boot, Mockito and JUnit 5
 
 
 ```shell
@@ -25,3 +25,13 @@ You should get:
     }
 ]
 ```
+
+
+
+## Test Environments and Service Virtualization
+
+### Test Environments
+
+- **Local**: Run the application locally and use an in-memory database.
+- **Docker**: Run the application in a Docker container and use an in-memory database.
+- 

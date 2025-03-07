@@ -65,7 +65,7 @@ public class RoomServiceTest {
 
 
     @Test
-    void should_ReturnFirstAvailableRoomId_When_AvailableRoom() {
+    void should_ReturnFirstAvailableRoom_When_AvailableRoom() {
         // given
         Mockito.when(roomRepository.findAll()).thenReturn(rooms);
 
@@ -73,10 +73,10 @@ public class RoomServiceTest {
         LocalDate checkOutDate = LocalDate.of(2025, Month.MARCH, 30);
 
         int totalGuests = 3;
-        long expected = rooms.get(1).getId();
+        Room expected = rooms.get(1);
 
         // when
-        long actual = roomService.findAvailableRoomId(checkInDate, checkOutDate, totalGuests);
+        Room actual = roomService.findAvailableRoom(checkInDate, checkOutDate, totalGuests);
 
         // then
         assertThat(actual).isEqualTo(expected);
