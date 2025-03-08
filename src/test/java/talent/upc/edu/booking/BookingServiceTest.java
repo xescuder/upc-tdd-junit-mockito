@@ -13,13 +13,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import talent.upc.edu.booking.adapters.UserRestAdapter;
 import talent.upc.edu.booking.model.Booking;
 import talent.upc.edu.booking.model.User;
 import talent.upc.edu.booking.repository.BookingRepository;
 import talent.upc.edu.booking.service.*;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class BookingServiceTest {
@@ -56,7 +56,7 @@ public class BookingServiceTest {
         int totalGuests = 3;
 
         when(roomService.findAvailableRoomId(checkInDate, checkOutDate, totalGuests)).thenReturn(1L);
-        when(userService.getUser(any(Long.class))).thenReturn(Optional.of(user));
+        when(userService.getUser(any(Integer.class))).thenReturn(user);
         when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> {
             Booking bookingToSave = invocation.getArgument(0);
             long bookingId = 1L + (long) (Math.random() * (10L - 1L));

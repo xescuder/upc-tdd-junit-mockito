@@ -47,8 +47,8 @@ public class PricingServiceTest {
     @BeforeEach
     void setup() {
         // Initialize common test data
-        this.user = User.builder().id(1L).build();
-        this.room = Room.builder().id(1L).pricePerNight(100.0).build();
+        this.user = User.builder().id(1).build();
+        this.room = Room.builder().id(1).pricePerNight(100.0).build();
         this.checkInDate = LocalDate.of(2025, Month.MARCH, 21);
         this.checkOutDate = LocalDate.of(2025, Month.MARCH, 25);
     }

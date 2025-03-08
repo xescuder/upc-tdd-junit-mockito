@@ -1,6 +1,8 @@
 package talent.upc.edu.booking.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import talent.upc.edu.booking.model.Booking;
 
 import java.time.LocalDate;
@@ -8,10 +10,14 @@ import java.time.Month;
 import java.time.Period;
 import java.util.Arrays;
 
-@AllArgsConstructor
+@Service
 public class PricingService {
+    private final TimeProvider timeProvider;
 
-    private TimeProvider timeProvider;
+    @Autowired
+    public PricingService(TimeProvider timeProvider) {
+        this.timeProvider = timeProvider;
+    }
 
     public static final LocalDate[] BLACK_FRIDAY_DATES = {
             LocalDate.of(2025, Month.NOVEMBER, 28),

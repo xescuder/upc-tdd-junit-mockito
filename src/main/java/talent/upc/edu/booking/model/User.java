@@ -15,27 +15,13 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @With
-@Entity
-@Table(name = "users")
 public class User {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long id;
-
-  @Column(name = "first_name")
+  private int id;
   private String firstName;
-
-  @Column(name = "last_name")
   private String lastName;
-
-  @Column(name = "email")
   private String email;
-
-  @Column(name = "password")
   private String password;
-
-  @Column(name = "registration_date")
   private LocalDate registrationDate;
-
+  private String avatar;
 }

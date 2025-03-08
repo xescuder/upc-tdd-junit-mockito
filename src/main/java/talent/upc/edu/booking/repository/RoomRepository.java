@@ -2,11 +2,13 @@ package talent.upc.edu.booking.repository;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 import talent.upc.edu.booking.model.Room;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Repository
 public interface RoomRepository extends CrudRepository<Room, Long> {
     List<Room> findAll();
 

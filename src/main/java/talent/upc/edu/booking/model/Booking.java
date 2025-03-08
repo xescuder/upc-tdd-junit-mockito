@@ -44,8 +44,10 @@ public class Booking {
     @JoinColumn(name = "room_id")
     private Room room;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    /**
+     * The user who made the booking, linked with external user service
+     */
+    @Transient
     private User user;
 
     @PostLoad
