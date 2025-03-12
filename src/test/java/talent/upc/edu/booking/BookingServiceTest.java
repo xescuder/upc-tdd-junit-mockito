@@ -13,8 +13,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import talent.upc.edu.booking.adapters.UserRestAdapter;
 import talent.upc.edu.booking.model.Booking;
+import talent.upc.edu.booking.model.Room;
 import talent.upc.edu.booking.model.User;
 import talent.upc.edu.booking.repository.BookingRepository;
 import talent.upc.edu.booking.service.*;
@@ -27,16 +27,21 @@ public class BookingServiceTest {
     private RoomService roomService;
 
     @Mock
-    private PaymentService paymentService;
+    private PricingService pricingService;
 
     @Mock
-    private BookingRepository bookingRepository;
+    private PaymentService paymentService;
 
     @Mock
     private UserService userService;
 
     @Mock
     private MailSender mailSender;
+
+    @Mock
+    private BookingRepository bookingRepository;
+
+
 
     @InjectMocks
     private BookingService bookingService;
@@ -49,13 +54,14 @@ public class BookingServiceTest {
     @Test
     void should_MakeBooking_When_AllInputIsCorrect() {
         // Given
-        Booking booking = Booking.builder().guestFullName("Xavier Escudero Sabadell").build();
-        User user = User.builder().build();
+        Room room = Room.builder().build();
+        User user = User.builder().email("xescuder@gmail.com").build();
         LocalDate checkInDate = LocalDate.of(2025, 3, 21);
         LocalDate checkOutDate = LocalDate.of(2025, 3, 25);
-        int totalGuests = 3;
 
-        when(roomService.findAvailableRoomId(checkInDate, checkOutDate, totalGuests)).thenReturn(1L);
+        Booking booking = Booking.builder().user(user).numOfAdults(2).numOfChildren(1).checkInDate(checkInDate).checkOutDate(checkOutDate).build();
+
+        when(roomService.findAvailableRoom(any(LocalDate.class), any(LocalDate.class), any(Integer.class))).thenReturn(room);
         when(userService.getUser(any(Integer.class))).thenReturn(user);
         when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> {
             Booking bookingToSave = invocation.getArgument(0);
@@ -65,12 +71,12 @@ public class BookingServiceTest {
         });
 
         // when
-        String bookingId = bookingService.makeBooking(booking);
+        bookingService.makeBooking(booking);
 
         // then
         verify(bookingRepository).save(bookingArgumentCaptor.capture());
         Booking savedBooking = bookingArgumentCaptor.getValue();
-        assertThat(booking.getGuestFullName()).equals(savedBooking.getGuestFullName());
-        verify(mailSender).sendMail(user.getEmail(), "Booking Confirmation", "Your booking has been confirmed with id: " + bookingId);
+        assertThat(booking).isEqualTo(savedBooking);
+        verify(mailSender).sendMail(any(String.class), any(String.class), any(String.class));
     }
 }
