@@ -38,6 +38,9 @@ public class Room {
     }
 
     public boolean isAvailable(LocalDate checkInDate, LocalDate checkOutDate) {
+        if (bookings == null) {
+            return true;
+        }
         return bookings.stream().noneMatch(booking -> booking.getCheckInDate().isBefore(checkOutDate) && booking.getCheckOutDate().isAfter(checkInDate));
     }
 }
