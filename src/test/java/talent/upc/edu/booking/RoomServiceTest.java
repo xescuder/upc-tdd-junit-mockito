@@ -99,7 +99,7 @@ public class RoomServiceTest {
         int totalGuests = 3;
 
         // then
-        assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> roomService.findAvailableRoomId(checkInDate, checkOutDate, totalGuests));
+        assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> roomService.findAvailableRoom(checkInDate, checkOutDate, totalGuests));
     }
 }
 
