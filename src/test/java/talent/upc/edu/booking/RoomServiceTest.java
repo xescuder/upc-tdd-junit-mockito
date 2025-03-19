@@ -96,7 +96,7 @@ public class RoomServiceTest {
 
         LocalDate checkInDate = LocalDate.of(2025, Month.MARCH, 22);
         LocalDate checkOutDate = LocalDate.of(2025, Month.MARCH, 24);
-        int totalGuests = 3;
+        int totalGuests = 5;
 
         // then
         assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> roomService.findAvailableRoom(checkInDate, checkOutDate, totalGuests));
